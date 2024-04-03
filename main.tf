@@ -132,7 +132,7 @@ resource "google_cloud_scheduler_job" "job" {
           "runtimeConfig" : {
             "version" : "2.1",
             "properties" : {
-              "spark.executor.instances" : "1",
+              "spark.executor.instances" : "2",
               "spark.driver.cores" : "4",
               "spark.driver.memory" : "9600m",
               "spark.executor.cores" : "4",
