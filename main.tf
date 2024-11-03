@@ -144,9 +144,9 @@ resource "google_cloud_scheduler_job" "job" {
           "environmentConfig" : {
             "executionConfig" : {
               "serviceAccount" : google_service_account.service_account.email,
-              "subnetworkUri" : "subnet-for-vpn",
-              "ttl": var.ttl
-            }
+              "subnetworkUri" : "subnet-for-vpn"
+            },
+            "ttl": var.ttl
           }
         }
       )
