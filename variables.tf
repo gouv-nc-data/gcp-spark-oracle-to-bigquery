@@ -49,3 +49,9 @@ variable "mode" {
   description = "type d'upload sur bigquery"
   default     = "overwrite"
 }
+
+variable "ttl" {
+  type        = string
+  description = "Durée maximum d'un job en seconde, https://cloud.google.com/dataproc-serverless/docs/quickstarts/spark-batch?hl=fr#dataproc_serverless_create_batch_workload-api"
+  default     = "14400s"
+}
