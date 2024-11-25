@@ -119,7 +119,7 @@ resource "google_cloud_scheduler_job" "job" {
         {
           "pysparkBatch" : {
             "jarFileUris" : [
-              "gs://bucket-prj-dinum-data-templates-66aa/ojdbc8-21.7.0.0.jar"
+              "gs://bucket-prj-dinum-data-templates-66aa/${var.jdbc_driver}"
             ],
             "args" : [
               "--jdbc-url=${data.google_secret_manager_secret_version.jdbc-url-secret.secret_data}",

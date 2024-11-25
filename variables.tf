@@ -55,3 +55,9 @@ variable "ttl" {
   description = "Durée maximum d'un job en seconde, https://cloud.google.com/dataproc-serverless/docs/quickstarts/spark-batch?hl=fr#dataproc_serverless_create_batch_workload-api"
   default     = "14400s"
 }
+
+variable "jdbc_driver" {
+  type        = string
+  description = "fichier jar de drivers jdbc"
+  default     = "ojdbc8-21.7.0.0.jar"
+}
