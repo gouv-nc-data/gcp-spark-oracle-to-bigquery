@@ -61,3 +61,15 @@ variable "jdbc_driver" {
   description = "fichier jar de drivers jdbc"
   default     = "ojdbc8-21.7.0.0.jar"
 }
+
+variable "generation_id" {
+  type        = string
+  description = "generation id du fichier dans le bucket"
+  default     = ""
+}
+
+variable "subnetwork_name" {
+  type        = string
+  description = "subnetwork du job"
+  default     = "subnet-for-vpn"
+}
