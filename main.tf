@@ -148,8 +148,7 @@ resource "google_cloud_scheduler_job" "job" {
               "--jdbc-url=${data.google_secret_manager_secret_version.jdbc-url-secret.secret_data}",
               "--schema=${var.schema}",
               "--dataset=${var.dataset_name}",
-              "--exclude=${var.exclude}",
-              "--gcs-bucket=${google_storage_bucket.dataproc_staging_bucket.name}"
+              "--exclude=${var.exclude}"
             ],
             "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/oracle_to_bigquery.py${local.safe_gen_id}"
           },
@@ -161,7 +160,8 @@ resource "google_cloud_scheduler_job" "job" {
               "spark.driver.memory" : "9600m",
               "spark.executor.cores" : "4",
               "spark.executor.memory" : "9600m",
-              "spark.hadoop.fs.gs.inputstream.support.gzip.encoding.enable" : "true"
+              "spark.hadoop.fs.gs.inputstream.support.gzip.encoding.enable" : "true",
+              "spark.datasource.bigquery.temporaryGcsBucket" : google_storage_bucket.dataproc_staging_bucket.name
             }
           },
           "environmentConfig" : {
