@@ -5,6 +5,9 @@ locals {
   safe_gen_id    = length(var.generation_id) > 0 ? "#${var.generation_id}" : ""
 }
 
+# ------------------------------------
+# Service account
+# ------------------------------------
 resource "google_service_account" "service_account" {
   account_id   = "sa-oracle2bq-${local.hyphen_ds_name}"
   display_name = "Service Account created by terraform for ${var.project_id}"
@@ -69,13 +72,31 @@ resource "google_project_iam_member" "cloud_scheduler_runner_bindings" {
   member  = "serviceAccount:${google_service_account.service_account.email}"
 }
 
-####
+# ------------------------------------
+# Temp bucket
+# ------------------------------------
+resource "google_storage_bucket" "dataproc_staging_bucket" {
+  project       = var.project_id
+  name          = "dataproc-staging-${local.hyphen_ds_name}"
+  location      = "EU"
+  force_destroy = true
+
+  uniform_bucket_level_access = true
+}
+
+# ------------------------------------
 # Dataproc
-####
+# ------------------------------------
 
 resource "google_storage_bucket_iam_member" "access_to_script" {
   bucket = "bucket-prj-dinum-data-templates-66aa"
   role   = "roles/storage.objectViewer"
+  member = "serviceAccount:${google_service_account.service_account.email}"
+}
+
+resource "google_storage_bucket_iam_member" "access_to_temp_bucket" {
+  bucket = google_storage_bucket.dataproc_staging_bucket.name
+  role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.service_account.email}"
 }
 
@@ -127,7 +148,8 @@ resource "google_cloud_scheduler_job" "job" {
               "--jdbc-url=${data.google_secret_manager_secret_version.jdbc-url-secret.secret_data}",
               "--schema=${var.schema}",
               "--dataset=${var.dataset_name}",
-              "--exclude=${var.exclude}"
+              "--exclude=${var.exclude}",
+              "--gcs-bucket=${google_storage_bucket.dataproc_staging_bucket.name}"
             ],
             "mainPythonFileUri" : "gs://bucket-prj-dinum-data-templates-66aa/oracle_to_bigquery.py${local.safe_gen_id}"
           },
@@ -139,7 +161,6 @@ resource "google_cloud_scheduler_job" "job" {
               "spark.driver.memory" : "9600m",
               "spark.executor.cores" : "4",
               "spark.executor.memory" : "9600m",
-              "spark.dynamicAllocation.executorAllocationRatio" : "0.3",
               "spark.hadoop.fs.gs.inputstream.support.gzip.encoding.enable" : "true"
             }
           },
